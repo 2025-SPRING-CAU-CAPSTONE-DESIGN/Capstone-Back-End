@@ -1,6 +1,7 @@
 package com.capstone.storyforest.user.dto;
 
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,7 +20,7 @@ public class JoinRequestDTO {
     @NotEmpty(message = "비밀번호 확인을 입력하셔야 합니다.")
     private String passwordConfirm;
 
-    @NotEmpty(message = "생년월일을 입력하셔야 합니다.")
+    @NotNull(message = "생년월일을 입력하셔야 합니다.")
     private LocalDate birthDate;
 
 }

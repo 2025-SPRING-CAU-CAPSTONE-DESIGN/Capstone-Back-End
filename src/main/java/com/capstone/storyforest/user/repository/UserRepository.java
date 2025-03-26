@@ -1,8 +1,8 @@
-package com.capstone.storyforest.repository;
+package com.capstone.storyforest.user.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.capstone.storyforest.entity.User;
+import com.capstone.storyforest.user.entity.User;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 

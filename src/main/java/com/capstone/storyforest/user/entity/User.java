@@ -1,4 +1,4 @@
-package com.capstone.storyforest.entity;
+package com.capstone.storyforest.user.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

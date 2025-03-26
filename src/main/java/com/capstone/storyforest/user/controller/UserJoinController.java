@@ -1,7 +1,7 @@
-package com.capstone.storyforest.controller;
+package com.capstone.storyforest.user.controller;
 
-import com.capstone.storyforest.dto.JoinDto;
-import com.capstone.storyforest.service.JoinService;
+import com.capstone.storyforest.user.dto.JoinDto;
+import com.capstone.storyforest.user.service.JoinService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;

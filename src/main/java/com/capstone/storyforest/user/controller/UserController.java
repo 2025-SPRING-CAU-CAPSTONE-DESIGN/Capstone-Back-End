@@ -1,4 +1,4 @@
-package com.capstone.storyforest.controller;
+package com.capstone.storyforest.user.controller;
 
 
 import org.springframework.web.bind.annotation.RestController;

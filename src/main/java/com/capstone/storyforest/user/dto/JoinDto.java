@@ -1,4 +1,4 @@
-package com.capstone.storyforest.dto;
+package com.capstone.storyforest.user.dto;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;

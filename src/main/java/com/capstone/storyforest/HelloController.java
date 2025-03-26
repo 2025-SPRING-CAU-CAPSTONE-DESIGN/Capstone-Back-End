@@ -1,4 +1,4 @@
-package com.capstone.storyforest.controller;
+package com.capstone.storyforest;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;

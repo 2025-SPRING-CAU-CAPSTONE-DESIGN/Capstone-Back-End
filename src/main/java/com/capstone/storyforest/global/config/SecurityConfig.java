@@ -1,4 +1,4 @@
-package com.capstone.storyforest.config;
+package com.capstone.storyforest.global.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

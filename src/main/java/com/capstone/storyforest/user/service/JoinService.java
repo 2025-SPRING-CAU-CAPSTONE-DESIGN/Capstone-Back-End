@@ -1,11 +1,11 @@
-package com.capstone.storyforest.service;
+package com.capstone.storyforest.user.service;
 
-import com.capstone.storyforest.dto.JoinDto;
-import com.capstone.storyforest.repository.UserRepository;
+import com.capstone.storyforest.user.dto.JoinDto;
+import com.capstone.storyforest.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.capstone.storyforest.entity.User;
+import com.capstone.storyforest.user.entity.User;
 
 import java.time.LocalDate;
 

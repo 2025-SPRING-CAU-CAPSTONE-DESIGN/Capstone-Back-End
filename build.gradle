@@ -34,6 +34,9 @@ dependencies {
 	//runtimeOnly 'com.h2database:h2'
 	runtimeOnly 'com.mysql:mysql-connector-j'
 
+	// validation 의존성 추가
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
 	// jwt 의존성
 	implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
 	implementation 'io.jsonwebtoken:jjwt-impl:0.12.3'

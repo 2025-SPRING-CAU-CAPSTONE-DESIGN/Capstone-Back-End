@@ -1,6 +1,7 @@
 package com.capstone.storyforest.user.service;
 
-import com.capstone.storyforest.user.dto.JoinDto;
+
+import com.capstone.storyforest.user.dto.JoinRequestDTO;
 import com.capstone.storyforest.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -16,12 +17,12 @@ public class JoinService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public void joinProcess(JoinDto joinDto){
+    public void joinProcess(JoinRequestDTO joinRequestDTO){
 
-        String username=joinDto.getUsername();
-        String password=joinDto.getPassword();
-        String passwordConfirm=joinDto.getPasswordConfirm();
-        LocalDate birthDate=joinDto.getBirthDate();
+        String username=joinRequestDTO.getUsername();
+        String password=joinRequestDTO.getPassword();
+        String passwordConfirm=joinRequestDTO.getPasswordConfirm();
+        LocalDate birthDate=joinRequestDTO.getBirthDate();
 
         Boolean isExist=userRepository.existsByUsername(username);
 

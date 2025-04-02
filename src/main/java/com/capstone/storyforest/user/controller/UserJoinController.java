@@ -5,6 +5,8 @@ import com.capstone.storyforest.global.apiPaylod.code.status.SuccessStatus;
 import com.capstone.storyforest.user.dto.JoinRequestDTO;
 import com.capstone.storyforest.user.dto.JoinResponseDTO;
 
+import com.capstone.storyforest.user.dto.UserLoginRequestDTO;
+import com.capstone.storyforest.user.dto.UserLoginResponseDTO;
 import com.capstone.storyforest.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,5 +29,11 @@ public class UserJoinController {
         JoinResponseDTO joinResponseDTO = new JoinResponseDTO(user);
 
         return ResponseEntity.ok(ApiResponse.onSuccess(SuccessStatus._OK, joinResponseDTO));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<ApiResponse<UserLoginResponseDTO>> login(@RequestBody UserLoginRequestDTO userLoginRequestDTO) {
+        UserLoginResponseDTO loginResponseDTO = userService.login(userLoginRequestDTO);
+        return ResponseEntity.ok(ApiResponse.onSuccess(SuccessStatus._OK, loginResponseDTO));
     }
 }

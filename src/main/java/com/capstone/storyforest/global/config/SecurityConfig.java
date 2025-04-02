@@ -1,7 +1,7 @@
 package com.capstone.storyforest.global.config;
 
+import com.capstone.storyforest.global.jwt.JWTFilter;
 import com.capstone.storyforest.global.jwt.JWTUtil;
-import com.capstone.storyforest.global.jwt.LoginFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -67,7 +67,10 @@ public class SecurityConfig {
                         .anyRequest().authenticated());
 
         http
-                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration),jwtUtil), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JWTFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
+
+        //http
+          //      .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration),jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
         //세션 설정
         // jwt에서는 세션을 stateless 상태로 관리함.

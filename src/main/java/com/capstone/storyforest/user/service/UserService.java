@@ -3,7 +3,10 @@ package com.capstone.storyforest.user.service;
 
 import com.capstone.storyforest.global.apiPaylod.code.status.ErrorStatus;
 import com.capstone.storyforest.global.apiPaylod.exception.handler.UserHandler;
+import com.capstone.storyforest.global.jwt.JWTUtil;
 import com.capstone.storyforest.user.dto.JoinRequestDTO;
+import com.capstone.storyforest.user.dto.UserLoginRequestDTO;
+import com.capstone.storyforest.user.dto.UserLoginResponseDTO;
 import com.capstone.storyforest.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -14,10 +17,11 @@ import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
-public class JoinService {
+public class UserService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final JWTUtil jwtUtil;
 
     public User joinProcess(JoinRequestDTO joinRequestDTO){
 
@@ -43,6 +47,26 @@ public class JoinService {
         user.setRole("ROLE_ADMIN");
 
         return userRepository.save(user);
+    }
+
+    public UserLoginResponseDTO login(UserLoginRequestDTO userLoginRequestDTO){
+        // 1. 이메일 검증
+        User user = userRepository.findByUsername(userLoginRequestDTO.getUsername())
+                .orElseThrow(() -> new UserHandler(ErrorStatus.USER_NOT_FOUND));
+
+        // 2. 비밀번호 검증
+        if (!bCryptPasswordEncoder.matches(userLoginRequestDTO.getPassword(), user.getPassword())) {
+            throw new UserHandler(ErrorStatus.USER_WRONG_PASSWORD);
+        }
+
+        // 3. JWT 생성 (10시간 = 60 * 60 * 10 * 1000ms)
+        String accessToken = jwtUtil.createJwt(user.getUsername(), user.getRole(), 60L *24* 60 * 60 * 1000);
+
+        System.out.println("Generated JWT: " + accessToken);
+
+        // 4. 응답 반환
+        return new UserLoginResponseDTO(accessToken);
+
     }
 
 }

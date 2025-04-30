@@ -46,6 +46,9 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	// 엑셀 데이터 불러오기 위한 의존성 추가
+	implementation 'org.apache.poi:poi-ooxml:5.2.5'
 }
 
 tasks.named('test') {

@@ -8,6 +8,7 @@ import com.capstone.storyforest.user.dto.JoinRequestDTO;
 import com.capstone.storyforest.user.dto.UserLoginRequestDTO;
 import com.capstone.storyforest.user.dto.UserLoginResponseDTO;
 import com.capstone.storyforest.user.repository.UserRepository;
+import com.capstone.storyforest.wordgame.config.LevelUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,8 @@ public class UserService {
         String password=joinRequestDTO.getPassword();
         String passwordConfirm=joinRequestDTO.getPasswordConfirm();
         LocalDate birthDate=joinRequestDTO.getBirthDate();
+        // 레벨 계산
+        int level=LevelUtil.calculateLevel(joinRequestDTO.getBirthDate());
 
         Boolean isExist=userRepository.existsByUsername(username);
 
@@ -45,6 +48,9 @@ public class UserService {
         user.setPassword(bCryptPasswordEncoder.encode(password));
         user.setBirthDate(birthDate);
         user.setRole("ROLE_ADMIN");
+
+        // 레벨 세팅
+        user.setLevel(level);
 
         return userRepository.save(user);
     }

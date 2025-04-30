@@ -25,6 +25,10 @@ public enum ErrorStatus implements BaseErrorCode {
     INVALID_LEVEL   ("WORD4001", "level 값은 1~3이어야 합니다."),
     NOT_ENOUGH_WORDS("WORD4002", "요청한 난이도의 단어가 충분하지 않습니다."),
 
+    /* ===== 리더보드 영역 ===== */
+    INVALID_PAGE ("LEAD4001", "page 값은 0 이상이어야 합니다."),
+    INVALID_SIZE ("LEAD4002", "size 값은 1~50 사이여야 합니다."),
+
     /* ===== 검증/리소스 ===== */
     VALIDATION_ERROR ("COMMON400A", "유효성 검증 실패"),
     NOT_FOUND        (HttpStatus.NOT_FOUND, "COMMON404", "리소스를 찾을 수 없습니다.")

@@ -3,13 +3,13 @@ package com.capstone.storyforest.wordgame.controller;
 import com.capstone.storyforest.global.apiPaylod.ApiResponse;
 import com.capstone.storyforest.global.apiPaylod.code.status.SuccessStatus;
 import com.capstone.storyforest.user.entity.User;
-import com.capstone.storyforest.wordgame.dto.ScoreRequestDTO;
 import com.capstone.storyforest.wordgame.dto.ScoreResponseDTO;
+import com.capstone.storyforest.wordgame.dto.WordRequestDTO;
 import com.capstone.storyforest.wordgame.entity.Word;
 import com.capstone.storyforest.wordgame.service.WordService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,12 +21,11 @@ public class WordController {
 
     private final WordService wordService;
 
-    /** 단어 N개·난이도 무작위 */
-    @GetMapping("/random")
+    @PostMapping("/random")
     public ResponseEntity<ApiResponse<List<Word>>> randomWords(
-            @RequestParam(defaultValue = "10") int count) {
+            @RequestBody @Valid WordRequestDTO dto) {
 
-        List<Word> words = wordService.getRandomWords(count);
+        List<Word> words = wordService.getMixedWords(dto.getLevel());
         return ResponseEntity.ok(
                 ApiResponse.onSuccess(SuccessStatus._OK, words)
         );
@@ -35,8 +34,8 @@ public class WordController {
     /** 전부 정답 후 점수 누적 */
     @PostMapping("/score")
     public ResponseEntity<ApiResponse<ScoreResponseDTO>> score(
-            @RequestBody ScoreRequestDTO dto,
-            @AuthenticationPrincipal User user) {
+            @RequestBody WordRequestDTO dto,
+            User user) {
 
         ScoreResponseDTO resp = wordService.addRoundScore(dto, user);
         return ResponseEntity.ok(

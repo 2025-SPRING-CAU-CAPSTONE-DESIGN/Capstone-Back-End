@@ -22,5 +22,11 @@ public class User {
     private String password;
     private LocalDate birthDate;
 
+    /** 난이도 레벨: 1~3 */
+    private int level;
+
+    private int totalScore=0;
+
+
     private String role;
 }

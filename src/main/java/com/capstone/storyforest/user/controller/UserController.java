@@ -24,7 +24,7 @@ public class UserController {
         return "admin!!";
     }
 
-    @PostMapping("/user")
+    @GetMapping("/user")
     public ResponseEntity<ApiResponse<?>> getUserInfo(@RequestHeader("Authorization") String authorizationHeader) {
 
         String accessToken = authorizationHeader.replace("Bearer ", "");

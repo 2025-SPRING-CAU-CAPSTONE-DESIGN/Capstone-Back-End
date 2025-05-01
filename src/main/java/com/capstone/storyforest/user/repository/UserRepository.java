@@ -14,6 +14,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByUsername(String username);
 
+    Optional<User> findByaccessToken(String accessToken);
+
     // 누적 점수-> id 순으로 정렬&페이징하는
     // 리더보드를 위한 함수
     Page<User> findAllByOrderByTotalScoreDescIdAsc(Pageable pageable);

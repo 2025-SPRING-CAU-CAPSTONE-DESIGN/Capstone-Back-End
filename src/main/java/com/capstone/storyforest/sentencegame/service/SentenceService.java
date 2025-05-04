@@ -3,7 +3,6 @@ package com.capstone.storyforest.sentencegame.service;
 import com.capstone.storyforest.global.apiPaylod.code.status.ErrorStatus;
 import com.capstone.storyforest.global.apiPaylod.exception.handler.SentenceHandler;
 import com.capstone.storyforest.sentencegame.ai.CreativityService;
-import com.capstone.storyforest.sentencegame.ai.ProfanityService;
 import com.capstone.storyforest.sentencegame.dto.SentenceScoreResponseDTO;
 import com.capstone.storyforest.sentencegame.dto.SentenceSubmitRequestDTO;
 import com.capstone.storyforest.user.entity.User;

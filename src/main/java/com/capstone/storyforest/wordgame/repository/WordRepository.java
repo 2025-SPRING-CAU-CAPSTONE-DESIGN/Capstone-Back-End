@@ -10,4 +10,7 @@ import java.util.List;
 public interface WordRepository extends JpaRepository<Word, Long> {
     @Query(value = "SELECT * FROM word WHERE difficulty = :level ORDER BY RAND() LIMIT :count", nativeQuery = true)
     List<Word> findRandomByLevel(@Param("level") int level, @Param("count") int count);
+
+    List<Word> findByTermInIgnoreCase(List<String> terms);
+
 }

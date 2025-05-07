@@ -1,4 +1,4 @@
-package com.capstone.storyforest.sentencegame.ai;
+package com.capstone.storyforest.sentencegame.creativity;
 
 import org.springframework.stereotype.Component;
 

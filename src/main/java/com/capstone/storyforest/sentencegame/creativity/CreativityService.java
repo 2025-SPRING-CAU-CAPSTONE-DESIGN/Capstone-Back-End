@@ -1,4 +1,4 @@
-package com.capstone.storyforest.sentencegame.ai;
+package com.capstone.storyforest.sentencegame.creativity;
 
 public interface CreativityService {
     boolean isCreative(String sentence);

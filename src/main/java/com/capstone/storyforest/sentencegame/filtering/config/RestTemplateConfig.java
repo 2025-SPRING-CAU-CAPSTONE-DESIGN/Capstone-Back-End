@@ -1,4 +1,4 @@
-package com.capstone.storyforest.filtering.config;
+package com.capstone.storyforest.sentencegame.filtering.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;

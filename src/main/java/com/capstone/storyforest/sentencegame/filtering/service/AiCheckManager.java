@@ -1,8 +1,8 @@
-package com.capstone.storyforest.filtering.service;
+package com.capstone.storyforest.sentencegame.filtering.service;
 
-import com.capstone.storyforest.filtering.dto.CurseCheckResult;
-import com.capstone.storyforest.filtering.dto.OpenAiMessage;
-import com.capstone.storyforest.filtering.dto.OpenAiRequest;
+import com.capstone.storyforest.sentencegame.filtering.dto.CurseCheckResult;
+import com.capstone.storyforest.sentencegame.filtering.dto.OpenAiMessage;
+import com.capstone.storyforest.sentencegame.filtering.dto.OpenAiRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

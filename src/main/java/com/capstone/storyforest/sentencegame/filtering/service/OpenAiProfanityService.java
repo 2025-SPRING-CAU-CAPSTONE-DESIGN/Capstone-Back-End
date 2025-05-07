@@ -1,7 +1,6 @@
-package com.capstone.storyforest.sentencegame.service;
+package com.capstone.storyforest.sentencegame.filtering.service;
 
 import com.capstone.storyforest.sentencegame.filtering.dto.CurseCheckResult;
-import com.capstone.storyforest.sentencegame.filtering.service.AiCheckManager;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

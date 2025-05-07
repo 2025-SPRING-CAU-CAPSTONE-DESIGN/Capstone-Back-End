@@ -8,6 +8,7 @@ import com.capstone.storyforest.sentencegame.dto.SentenceSubmitRequestDTO;
 import com.capstone.storyforest.sentencegame.service.SentenceService;
 import com.capstone.storyforest.user.entity.User;
 import com.capstone.storyforest.wordgame.entity.Word;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -41,7 +42,7 @@ public class SentenceController {
     @PostMapping("/score")
     public ResponseEntity<ApiResponse<SentenceScoreResponseDTO>> score(
             @RequestBody @Valid SentenceSubmitRequestDTO sentenceSubmitRequestDTO,
-            User user){
+            User user) throws JsonProcessingException {
 
         return ResponseEntity.ok(
                 ApiResponse.onSuccess(

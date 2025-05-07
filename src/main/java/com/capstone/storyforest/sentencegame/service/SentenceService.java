@@ -5,10 +5,12 @@ import com.capstone.storyforest.global.apiPaylod.exception.handler.SentenceHandl
 import com.capstone.storyforest.sentencegame.creativity.service.CreativityService;
 import com.capstone.storyforest.sentencegame.dto.SentenceScoreResponseDTO;
 import com.capstone.storyforest.sentencegame.dto.SentenceSubmitRequestDTO;
+
 import com.capstone.storyforest.user.entity.User;
 import com.capstone.storyforest.user.repository.UserRepository;
 import com.capstone.storyforest.wordgame.entity.Word;
 import com.capstone.storyforest.wordgame.repository.WordRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +25,7 @@ public class SentenceService {
     private final UserRepository userRepository;
     private final ProfanityService profanityService;
     private final CreativityService creativityService;
+
 
     // 단어 7개 선택하는 로직(level 검증 포함)
     @Transactional(readOnly = true)
@@ -42,7 +45,7 @@ public class SentenceService {
 
     // 문장 제출 -> 점수 계산 후 점수 누적하기
     @Transactional
-    public SentenceScoreResponseDTO submitSentence(SentenceSubmitRequestDTO sentenceSubmitRequestDTO, User user){
+    public SentenceScoreResponseDTO submitSentence(SentenceSubmitRequestDTO sentenceSubmitRequestDTO, User user) throws JsonProcessingException {
 
 
         // 레벨 검증하기
@@ -80,6 +83,8 @@ public class SentenceService {
 
         /* 정확 사용 = 7개 전부 사용했다고 가정 (고급 품사 검사는 추후 AI) */
         boolean correctUsage = usedAll;
+
+
 
 
         /* ─── 2. 창의성 판정 (정확 사용일 때만 검사) ─── */

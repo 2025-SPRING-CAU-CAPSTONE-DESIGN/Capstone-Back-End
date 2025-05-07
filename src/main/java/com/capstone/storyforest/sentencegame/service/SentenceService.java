@@ -64,7 +64,7 @@ public class SentenceService {
                             || term.startsWith(s)); // ③ stems가 더 짧을 때 ★ 추가
         }
     }
-
+    /*
     // 단어 7개 선택하는 로직(level 검증 포함)
     @Transactional(readOnly = true)
     public List<Word> get7Words(int level){
@@ -79,7 +79,7 @@ public class SentenceService {
 
         return words;
     }
-
+    */
 
     // 문장 제출 -> 점수 계산 후 점수 누적하기
     @Transactional

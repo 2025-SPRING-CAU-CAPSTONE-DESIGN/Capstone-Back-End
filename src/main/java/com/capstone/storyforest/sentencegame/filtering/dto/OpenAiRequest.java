@@ -1,4 +1,4 @@
-package com.capstone.storyforest.filtering.dto;
+package com.capstone.storyforest.sentencegame.filtering.dto;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -27,6 +27,7 @@ public class SentenceService {
     private final CreativityService creativityService;
 
 
+
     // 단어 7개 선택하는 로직(level 검증 포함)
     @Transactional(readOnly = true)
     public List<Word> get7Words(int level){

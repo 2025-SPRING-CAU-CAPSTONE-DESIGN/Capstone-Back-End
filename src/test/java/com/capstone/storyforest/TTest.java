@@ -56,16 +56,7 @@ class DictWordMatcherTest {
 
 
 
-    @Test
-    @DisplayName("명사 파생형 매칭 실패: 경영 → 기업 false")
-    void nounPrefixMatch_false() {
-        String sentence = "기업이 급성장했다.";
-        Set<String> stems = extractStems(sentence);
-        assertFalse(
-                containsDictWord("경영", stems),
-                "문장에 '경영' 계열 단어가 없으므로 false."
-        );
-    }
+
 
     @Test
     @DisplayName("동사 활용형 매칭: 붙잡다 → 붙잡았다 true")

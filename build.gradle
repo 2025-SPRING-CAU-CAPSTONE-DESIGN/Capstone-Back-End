@@ -54,7 +54,8 @@ dependencies {
 	implementation 'org.apache.poi:poi-ooxml:5.2.5'
 
 
-	implementation 'org.openkoreantext:open-korean-text:2.1.0'
+	implementation 'org.openkoreantext:open-korean-text:2.3.1' // 최신
+	implementation 'org.scala-lang:scala-library:2.12.18'      // 필수
 }
 
 tasks.named('test') {

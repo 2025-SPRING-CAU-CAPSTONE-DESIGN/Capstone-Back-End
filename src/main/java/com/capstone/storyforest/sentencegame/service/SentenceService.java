@@ -12,10 +12,16 @@ import com.capstone.storyforest.wordgame.entity.Word;
 import com.capstone.storyforest.wordgame.repository.WordRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
+import org.openkoreantext.processor.KoreanTokenJava;
+import org.openkoreantext.processor.OpenKoreanTextProcessorJava;
+import org.openkoreantext.processor.tokenizer.KoreanTokenizer;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import scala.collection.Seq;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +33,36 @@ public class SentenceService {
     private final CreativityService creativityService;
 
 
+    // ───────────────── OKT 형태소 분석: 문장의 어간 집합 추출
+    private Set<String> extractStems(String sentence) {
+        CharSequence norm = OpenKoreanTextProcessorJava.normalize(sentence);
+        Seq<KoreanTokenizer.KoreanToken> tokens =
+                OpenKoreanTextProcessorJava.tokenize(norm);
+        List<KoreanTokenJava> javaTokens =
+                OpenKoreanTextProcessorJava.tokensToJavaKoreanTokenList(tokens);
+
+        return javaTokens.stream()
+                .map(t -> {
+                    String stem = t.getStem();
+                    return (stem != null && !stem.isEmpty() ? stem : t.getText()).toLowerCase();
+                })
+                .collect(Collectors.toSet());
+    }
+
+    // ───────────────── 표제어(명사/동사) ↔ 어간 매칭
+    private boolean containsDictWord(String dictTerm, Set<String> stems) {
+        String term = dictTerm.toLowerCase();
+
+        if (term.endsWith("다")) {            // 동사·형용사
+            if (stems.contains(term)) return true;
+            String base = term.substring(0, term.length() - 1);
+            return stems.stream().anyMatch(s -> s.startsWith(base));
+        } else {                             // 명사
+            return stems.contains(term) ||
+                    stems.stream().anyMatch(s -> s.startsWith(term)   // ② stems가 더 길 때
+                            || term.startsWith(s)); // ③ stems가 더 짧을 때 ★ 추가
+        }
+    }
 
     // 단어 7개 선택하는 로직(level 검증 포함)
     @Transactional(readOnly = true)
@@ -71,16 +107,26 @@ public class SentenceService {
             throw new SentenceHandler(ErrorStatus.NOT_ENOUGH_WORDS_SENTENCE);
 
 
-        /*1. 7개 단어가 모두 문장에 포함되어 있는지 검사하기 */
-        String senetenceLower= sentenceSubmitRequestDTO.getSentenceText().toLowerCase();
+        /* 1. 7개 단어가 모두 문장에 포함되어 있는지 검사하기 ─ 변경 ★ */
+        Set<String> stems = extractStems(sentenceSubmitRequestDTO.getSentenceText());  // 형태소 분석 → 어간 집합
 
-        boolean usedAll=true;  // 전부 포함 플래그
-        for(Word word:words){
-            if(!senetenceLower.contains(word.getTerm().toLowerCase())){
-                usedAll=false; // 하나라도 빠지면 false
-                break; // 더 볼 필요 없으니 탈출
+        boolean usedAll = true;          // 전부 포함 플래그
+        for (Word word : words) {
+            if (!containsDictWord(word.getTerm(), stems)) {   // ★ 표제어/활용형 매칭
+                usedAll = false;
+                break;
             }
         }
+
+        /* ────── 디버그 출력: 여기! ────── */
+        System.out.println("===== DEBUG =====");
+        System.out.println("stems : " + stems);          // 형태소 분석 결과
+        for (Word w : words) {
+            boolean ok = containsDictWord(w.getTerm(), stems);
+            System.out.println(w.getTerm() + " -> " + ok);
+        }
+        System.out.println("=================");
+        /* ─────────────────────────────── */
 
         /* 정확 사용 = 7개 전부 사용했다고 가정 (고급 품사 검사는 추후 AI) */
         boolean correctUsage = usedAll;

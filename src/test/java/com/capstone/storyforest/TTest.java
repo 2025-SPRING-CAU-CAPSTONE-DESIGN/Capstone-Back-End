@@ -70,7 +70,7 @@ class DictWordMatcherTest {
     @Test
     @DisplayName("동사 활용형 매칭: 붙잡다 → 붙잡았다 true")
     void verbStemMatch_true() {
-        String sentence = "노동자들이 경영진을 붙잡았고";
+        String sentence = "노동자들이 경영진을 붙잡아서";
         Set<String> stems = extractStems(sentence);
         assertTrue(
                 containsDictWord("붙잡다", stems),

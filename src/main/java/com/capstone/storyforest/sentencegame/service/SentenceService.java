@@ -119,15 +119,18 @@ public class SentenceService {
             }
         }
 
+
         /* ────── 디버그 출력: 여기! ────── */
-        System.out.println("===== DEBUG =====");
-        System.out.println("stems : " + stems);          // 형태소 분석 결과
-        for (Word w : words) {
-            boolean ok = containsDictWord(w.getTerm(), stems);
-            System.out.println(w.getTerm() + " -> " + ok);
-        }
-        System.out.println("=================");
+        //System.out.println("===== DEBUG =====");
+        //System.out.println("stems : " + stems);          // 형태소 분석 결과
+        //for (Word w : words) {
+         //   boolean ok = containsDictWord(w.getTerm(), stems);
+           // System.out.println(w.getTerm() + " -> " + ok);
+        //}
+        //System.out.println("=================");
         /* ─────────────────────────────── */
+
+
 
         /* 정확 사용 = 7개 전부 사용했다고 가정 (고급 품사 검사는 추후 AI) */
         boolean correctUsage = usedAll;

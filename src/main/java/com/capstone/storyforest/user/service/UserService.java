@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.capstone.storyforest.user.entity.User;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 
@@ -55,6 +56,8 @@ public class UserService {
         return userRepository.save(user);
     }
 
+
+    @Transactional
     public UserLoginResponseDTO login(UserLoginRequestDTO userLoginRequestDTO){
         // 1. 이메일 검증
         User user = userRepository.findByUsername(userLoginRequestDTO.getUsername())
@@ -70,9 +73,20 @@ public class UserService {
 
         System.out.println("Generated JWT: " + accessToken);
 
+        User updatedUser = user.toBuilder()
+                .accessToken(accessToken)
+                .build();
+
+        userRepository.save(updatedUser);
         // 4. 응답 반환
         return new UserLoginResponseDTO(accessToken);
 
+    }
+
+    public User getUserInfo(String accessToken) {
+
+        return userRepository.findByaccessToken(accessToken)
+                .orElseThrow(() -> new UserHandler(ErrorStatus.USER_NOT_FOUND));
     }
 
 }

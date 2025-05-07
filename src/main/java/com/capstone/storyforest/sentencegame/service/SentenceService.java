@@ -6,6 +6,7 @@ import com.capstone.storyforest.sentencegame.creativity.service.CreativityServic
 import com.capstone.storyforest.sentencegame.dto.SentenceScoreResponseDTO;
 import com.capstone.storyforest.sentencegame.dto.SentenceSubmitRequestDTO;
 
+import com.capstone.storyforest.sentencegame.filtering.service.ProfanityService;
 import com.capstone.storyforest.user.entity.User;
 import com.capstone.storyforest.user.repository.UserRepository;
 import com.capstone.storyforest.wordgame.entity.Word;

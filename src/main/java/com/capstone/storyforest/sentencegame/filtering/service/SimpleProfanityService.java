@@ -1,4 +1,4 @@
-package com.capstone.storyforest.sentencegame.service;
+package com.capstone.storyforest.sentencegame.filtering.service;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.stereotype.Component;

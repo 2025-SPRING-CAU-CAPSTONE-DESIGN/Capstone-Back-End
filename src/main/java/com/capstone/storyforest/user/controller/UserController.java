@@ -10,8 +10,11 @@ import com.capstone.storyforest.user.entity.User;
 import com.capstone.storyforest.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.annotations.Parameter;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.constraints.NotBlank;
 
 @RequiredArgsConstructor
 @RestController
@@ -35,6 +38,26 @@ public class UserController {
 
         return ResponseEntity.ok(ApiResponse.onSuccess(SuccessStatus._OK, userResponseDTO));
     }
+
+    @GetMapping("users/{nickname}/check")
+    public ResponseEntity<ApiResponse<?>> checkNickname(
+            @PathVariable("nickname") @NotBlank String nickname) {
+
+        // 닉네임 사용 가능 여부 체크
+        boolean isAble = userService.checkNickname(nickname);
+
+        // 사용 가능하면 성공 응답, 아니면 이미 사용 중인 닉네임
+        if (isAble) {
+            return ResponseEntity.ok(ApiResponse.onSuccess(SuccessStatus._OK, "사용 가능한 닉네임입니다."));
+        } else {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(ApiResponse.onFailure("400", "이미 사용 중인 닉네임입니다.", null));
+        }
+    }
+
+
+
 
 
 

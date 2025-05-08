@@ -32,4 +32,6 @@ public class User {
     private String accessToken;
 
     private String role;
+
+    private int tier; //1~10
 }

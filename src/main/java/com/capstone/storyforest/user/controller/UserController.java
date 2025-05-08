@@ -3,6 +3,7 @@ package com.capstone.storyforest.user.controller;
 
 import com.capstone.storyforest.global.apiPaylod.ApiResponse;
 import com.capstone.storyforest.global.apiPaylod.code.status.SuccessStatus;
+import com.capstone.storyforest.user.dto.GetTierResponseDTO;
 import com.capstone.storyforest.user.dto.JoinRequestDTO;
 import com.capstone.storyforest.user.dto.JoinResponseDTO;
 import com.capstone.storyforest.user.dto.UserResponseDTO;
@@ -56,6 +57,15 @@ public class UserController {
         }
     }
 
+    @GetMapping("/users/tier")
+    public ResponseEntity<ApiResponse<?>> getTierInfo(@RequestHeader("Authorization") String authorizationHeader) {
+
+        String accessToken = authorizationHeader.replace("Bearer ", "");
+
+        GetTierResponseDTO getTierResponseDTO = userService.getTierInfo(accessToken);
+
+        return ResponseEntity.ok(ApiResponse.onSuccess(SuccessStatus._OK, getTierResponseDTO));
+    }
 
 
 

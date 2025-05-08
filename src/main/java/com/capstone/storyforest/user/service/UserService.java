@@ -89,4 +89,12 @@ public class UserService {
                 .orElseThrow(() -> new UserHandler(ErrorStatus.USER_NOT_FOUND));
     }
 
+    public boolean checkNickname(String username) {
+        // 닉네임이 이미 사용 중인 경우에는 false 반환
+        User user = userRepository.findByUsername(username).orElse(null);
+        return user == null; // null이면 사용 가능, 아니면 사용 중
+    }
+
+
+
 }

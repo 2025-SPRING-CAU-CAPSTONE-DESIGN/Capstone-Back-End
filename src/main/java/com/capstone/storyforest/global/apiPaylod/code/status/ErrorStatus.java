@@ -29,6 +29,19 @@ public enum ErrorStatus implements BaseErrorCode {
     INVALID_PAGE ("LEAD4001", "page 값은 0 이상이어야 합니다."),
     INVALID_SIZE ("LEAD4002", "size 값은 1~50 사이여야 합니다."),
 
+    /* ===== 문장게임 영역 ===== */
+    INVALID_LEVEL_SENTENCE   ("SENT4001", "level 값은 1~3이어야 합니다."),
+    NOT_ENOUGH_WORDS_SENTENCE("SENT4002", "요청 레벨의 단어가 부족합니다."),
+    PROFANITY_DETECTED       ("SENT4003", "문장에 비속어가 포함되어 있습니다."),
+
+    INAPPROPRIATE_USAGE("COMMON400", "단어의 사용이 적절하지 않습니다."),
+
+    /* ===== 대외(외부 API) ===== */
+    OPENAI_CALL_FAILED ("OPENAI5001", "OpenAI Moderation API 호출에 실패했습니다."),
+
+
+
+
     /* ===== 검증/리소스 ===== */
     VALIDATION_ERROR ("COMMON400A", "유효성 검증 실패"),
     NOT_FOUND        (HttpStatus.NOT_FOUND, "COMMON404", "리소스를 찾을 수 없습니다.")

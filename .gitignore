@@ -39,3 +39,5 @@ out/
 
 .env
 .DS_Store
+
+application.properties

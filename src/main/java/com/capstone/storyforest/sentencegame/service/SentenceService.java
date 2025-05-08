@@ -2,10 +2,11 @@ package com.capstone.storyforest.sentencegame.service;
 
 import com.capstone.storyforest.global.apiPaylod.code.status.ErrorStatus;
 import com.capstone.storyforest.global.apiPaylod.exception.handler.SentenceHandler;
+import com.capstone.storyforest.sentencegame.appropriateness.dto.AppropriatenessResult;
+import com.capstone.storyforest.sentencegame.appropriateness.service.AppropriatenessService;
 import com.capstone.storyforest.sentencegame.creativity.service.CreativityService;
 import com.capstone.storyforest.sentencegame.dto.SentenceScoreResponseDTO;
 import com.capstone.storyforest.sentencegame.dto.SentenceSubmitRequestDTO;
-
 import com.capstone.storyforest.sentencegame.filtering.service.ProfanityService;
 import com.capstone.storyforest.user.entity.User;
 import com.capstone.storyforest.user.repository.UserRepository;
@@ -32,7 +33,7 @@ public class SentenceService {
     private final UserRepository userRepository;
     private final ProfanityService profanityService;
     private final CreativityService creativityService;
-
+    private final AppropriatenessService appropriatenessService;
 
     // ───────────────── OKT 형태소 분석: 문장의 어간 집합 추출
     private Set<String> extractStems(String sentence) {
@@ -120,40 +121,33 @@ public class SentenceService {
         }
 
 
-        /* ────── 디버그 출력: 여기! ────── */
-        //System.out.println("===== DEBUG =====");
-        //System.out.println("stems : " + stems);          // 형태소 분석 결과
-        //for (Word w : words) {
-         //   boolean ok = containsDictWord(w.getTerm(), stems);
-           // System.out.println(w.getTerm() + " -> " + ok);
-        //}
-        //System.out.println("=================");
-        /* ─────────────────────────────── */
 
-
-
-        /* 정확 사용 = 7개 전부 사용했다고 가정 (고급 품사 검사는 추후 AI) */
-        boolean correctUsage = usedAll;
-
-
-
-
-        /* ─── 2. 창의성 판정 (정확 사용일 때만 검사) ─── */
-        boolean creative = false;
-        if (correctUsage) {
-            creative = creativityService.isCreative(sentenceSubmitRequestDTO.getSentenceText());
+        System.out.println("===== DEBUG =====");
+        System.out.println("stems : " + stems);          // 형태소 분석 결과
+        for (Word w : words) {
+           boolean ok = containsDictWord(w.getTerm(), stems);
+           System.out.println(w.getTerm() + " -> " + ok);
         }
+        System.out.println("=================");
+
+
 
         // 3. 점수 계산하기
         int score;
-        if(!correctUsage){
-            score=10;
-        }
-        else if(creative){
-            score=20;
-        }
-        else{
-            score=15;
+        if (!usedAll) {
+            score = 10;
+        } else {
+            List<String> terms = words.stream()
+                    .map(Word::getTerm)
+                    .toList();
+            AppropriatenessResult result = appropriatenessService.evaluate(sentenceSubmitRequestDTO.getSentenceText(), terms);
+
+            if (Boolean.TRUE.equals(result.getIsAppropriate())) {
+                score = 15;
+            } else {
+                boolean creative = creativityService.isCreative(sentenceSubmitRequestDTO.getSentenceText());
+                score = creative ? 20 : 10;
+            }
         }
 
         user.setTotalScore(user.getTotalScore()+score);

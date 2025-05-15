@@ -4,20 +4,23 @@ package com.capstone.storyforest.user.service;
 import com.capstone.storyforest.global.apiPaylod.code.status.ErrorStatus;
 import com.capstone.storyforest.global.apiPaylod.exception.handler.UserHandler;
 import com.capstone.storyforest.global.jwt.JWTUtil;
-import com.capstone.storyforest.user.dto.GetTierResponseDTO;
-import com.capstone.storyforest.user.dto.JoinRequestDTO;
-import com.capstone.storyforest.user.dto.UserLoginRequestDTO;
-import com.capstone.storyforest.user.dto.UserLoginResponseDTO;
+import com.capstone.storyforest.story.entity.Story;
+import com.capstone.storyforest.story.repository.StoryRepository;
+import com.capstone.storyforest.user.dto.*;
+import com.capstone.storyforest.user.entity.UserStory;
 import com.capstone.storyforest.user.repository.UserRepository;
 import com.capstone.storyforest.user.repository.UserStoryRepository;
 import com.capstone.storyforest.wordgame.config.LevelUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.capstone.storyforest.user.entity.User;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -110,9 +113,42 @@ public class UserService {
         int storiesInCurrentTier = totalStories - lowerBound;
         int progressPercent = (int) ((storiesInCurrentTier / 5.0) * 100);
         int storiesToNextTier = (tier < 10) ? (5 - storiesInCurrentTier) : 0;
+        int totalStory = totalStories;
 
-        return new GetTierResponseDTO(tier, progressPercent, storiesToNextTier);
+        return new GetTierResponseDTO(tier, progressPercent, storiesToNextTier, totalStory);
     }
+
+    public StoryResponseDTO getStory(int index, String accessToken) {
+        if (index <= 0) {
+            throw new IllegalArgumentException("Index must be 1 or greater");
+        }
+
+        User user = userRepository.findByaccessToken(accessToken)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Pageable page = PageRequest.of(index - 1, 1); // 0-based
+        List<UserStory> userStories = userStoryRepository.findTopNByUser(user, page);
+
+        if (userStories.isEmpty()) {
+            throw new RuntimeException("No user story found at the given index");
+        }
+
+        UserStory userStory = userStories.get(0);
+
+        Story story = userStoryRepository.findStoryByUserStoryId(userStory.getId());
+        if (story == null) {
+            throw new RuntimeException("Story not found");
+        }
+
+        return new StoryResponseDTO(
+                story.getId(),
+                story.getTitle(),
+                story.getContent(),
+                story.getScore()
+        );
+    }
+
+
 
 
 

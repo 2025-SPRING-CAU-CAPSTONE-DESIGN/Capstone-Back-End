@@ -3,13 +3,11 @@ package com.capstone.storyforest.user.controller;
 
 import com.capstone.storyforest.global.apiPaylod.ApiResponse;
 import com.capstone.storyforest.global.apiPaylod.code.status.SuccessStatus;
-import com.capstone.storyforest.user.dto.GetTierResponseDTO;
-import com.capstone.storyforest.user.dto.JoinRequestDTO;
-import com.capstone.storyforest.user.dto.JoinResponseDTO;
-import com.capstone.storyforest.user.dto.UserResponseDTO;
+import com.capstone.storyforest.user.dto.*;
 import com.capstone.storyforest.user.entity.User;
 import com.capstone.storyforest.user.service.UserService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.annotations.Parameter;
 import org.springframework.http.HttpStatus;
@@ -57,6 +55,18 @@ public class UserController {
         }
     }
 
+    @GetMapping("users/{storyId}/story")
+    public ResponseEntity<ApiResponse<?>> getStory(
+            @PathVariable("storyId") @NotNull int storyId, @RequestHeader("Authorization") String authorizationHeader) {
+
+        String accessToken = authorizationHeader.replace("Bearer ", "");
+
+        StoryResponseDTO storyResponseDTO = userService.getStory(storyId, accessToken);
+
+        return ResponseEntity.ok(ApiResponse.onSuccess(SuccessStatus._OK, storyResponseDTO));
+
+    }
+
     @GetMapping("/users/tier")
     public ResponseEntity<ApiResponse<?>> getTierInfo(@RequestHeader("Authorization") String authorizationHeader) {
 
@@ -66,6 +76,8 @@ public class UserController {
 
         return ResponseEntity.ok(ApiResponse.onSuccess(SuccessStatus._OK, getTierResponseDTO));
     }
+
+
 
 
 

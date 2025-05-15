@@ -23,4 +23,5 @@ public class UserStory {
 
     @ManyToOne
     private Story story; // Story 엔티티와의 관계
+
 }

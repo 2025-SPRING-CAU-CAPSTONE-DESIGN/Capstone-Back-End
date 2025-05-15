@@ -1,12 +1,10 @@
 package com.capstone.storyforest.user.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Setter
@@ -34,4 +32,7 @@ public class User {
     private String role;
 
     private int tier; //1~10
+
+    @OneToMany(mappedBy = "user")
+    private List<UserStory> userStories; // UserStory와의 관계
 }

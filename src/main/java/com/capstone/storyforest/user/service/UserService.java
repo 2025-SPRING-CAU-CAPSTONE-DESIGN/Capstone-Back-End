@@ -4,10 +4,12 @@ package com.capstone.storyforest.user.service;
 import com.capstone.storyforest.global.apiPaylod.code.status.ErrorStatus;
 import com.capstone.storyforest.global.apiPaylod.exception.handler.UserHandler;
 import com.capstone.storyforest.global.jwt.JWTUtil;
+import com.capstone.storyforest.user.dto.GetTierResponseDTO;
 import com.capstone.storyforest.user.dto.JoinRequestDTO;
 import com.capstone.storyforest.user.dto.UserLoginRequestDTO;
 import com.capstone.storyforest.user.dto.UserLoginResponseDTO;
 import com.capstone.storyforest.user.repository.UserRepository;
+import com.capstone.storyforest.user.repository.UserStoryRepository;
 import com.capstone.storyforest.wordgame.config.LevelUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -22,6 +24,7 @@ import java.time.LocalDate;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final UserStoryRepository userStoryRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JWTUtil jwtUtil;
 
@@ -49,6 +52,7 @@ public class UserService {
         user.setPassword(bCryptPasswordEncoder.encode(password));
         user.setBirthDate(birthDate);
         user.setRole("ROLE_ADMIN");
+        user.setTier(1);
 
         // 레벨 세팅
         user.setLevel(level);
@@ -93,6 +97,22 @@ public class UserService {
         // 닉네임이 이미 사용 중인 경우에는 false 반환
         User user = userRepository.findByUsername(username).orElse(null);
         return user == null; // null이면 사용 가능, 아니면 사용 중
+    }
+
+    public GetTierResponseDTO getTierInfo(String accessToken) {
+        User user = userRepository.findByaccessToken(accessToken)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        int totalStories = userStoryRepository.countByUser(user); // 유저가 만든 스토리 수
+
+        int tier = user.getTier();
+        int lowerBound = (tier - 1) * 5;
+        int storiesInCurrentTier = totalStories - lowerBound;
+        int progressPercent = (int) ((storiesInCurrentTier / 5.0) * 100);
+        int storiesToNextTier = (tier < 10) ? (5 - storiesInCurrentTier) : 0;
+        int totalStory = totalStories;
+
+        return new GetTierResponseDTO(tier, progressPercent, storiesToNextTier, totalStory);
     }
 
 

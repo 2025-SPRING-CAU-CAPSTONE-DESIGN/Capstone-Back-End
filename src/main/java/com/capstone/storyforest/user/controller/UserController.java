@@ -56,6 +56,13 @@ public class UserController {
         }
     }
 
+    @GetMapping("users/{storyId}/story")
+    public ResponseEntity<ApiResponse<?>> getStory(
+            @PathVariable("storyId") @NotBlank int storyId) {
+
+
+    }
+
 
 
 

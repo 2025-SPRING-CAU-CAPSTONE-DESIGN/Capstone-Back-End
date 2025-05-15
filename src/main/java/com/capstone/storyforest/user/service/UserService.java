@@ -110,8 +110,9 @@ public class UserService {
         int storiesInCurrentTier = totalStories - lowerBound;
         int progressPercent = (int) ((storiesInCurrentTier / 5.0) * 100);
         int storiesToNextTier = (tier < 10) ? (5 - storiesInCurrentTier) : 0;
+        int totalStory = totalStories;
 
-        return new GetTierResponseDTO(tier, progressPercent, storiesToNextTier);
+        return new GetTierResponseDTO(tier, progressPercent, storiesToNextTier, totalStory);
     }
 
 

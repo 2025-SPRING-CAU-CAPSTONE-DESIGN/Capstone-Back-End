@@ -36,6 +36,10 @@ public enum ErrorStatus implements BaseErrorCode {
 
     INAPPROPRIATE_USAGE("COMMON400", "단어의 사용이 적절하지 않습니다."),
 
+    /* ===== 친구 요청(duplicate) ===== */
+    FRIEND_REQUEST_DUPLICATE("FRIEND4001", "이미 보낸 요청이 존재합니다."),
+
+
     /* ===== 대외(외부 API) ===== */
     OPENAI_CALL_FAILED ("OPENAI5001", "OpenAI Moderation API 호출에 실패했습니다."),
 

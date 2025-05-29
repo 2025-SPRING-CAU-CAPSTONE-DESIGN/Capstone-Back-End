@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -34,7 +35,7 @@ public class FriendService {
     }
 
     @Transactional
-    public void sendRequest(User sender, FriendRequestDTO dto) {
+    public FriendRequestNotificationDTO sendRequest(User sender, FriendRequestDTO dto) {
         User receiver = userRepository.findByUsername(dto.getTargetUsername())
                 .orElseThrow(() -> new FriendHandler(ErrorStatus.USER_NOT_FOUND));
         boolean exists = requestRepository.findAllByReceiverAndStatus(receiver, FriendRequest.Status.PENDING).stream()
@@ -48,8 +49,14 @@ public class FriendService {
                 .status(FriendRequest.Status.PENDING)
                 .build();
         requestRepository.save(fr);
-        notificationService.send(receiver.getId(), "friend-request",
-                new FriendRequestNotificationDTO(fr.getId(), sender.getUsername()));
+
+        // 생성 시각 포함
+        LocalDateTime sentAt = LocalDateTime.now();
+        FriendRequestNotificationDTO notificationDto =
+                new FriendRequestNotificationDTO(fr.getId(), sender.getUsername(), sentAt);
+
+        notificationService.send(receiver.getId(), "friend-request", notificationDto);
+        return notificationDto;
     }
 
     @Transactional

@@ -5,6 +5,7 @@ import com.capstone.storyforest.global.apiPaylod.exception.handler.SentenceHandl
 import com.capstone.storyforest.sentencegame.appropriateness.dto.AppropriatenessResult;
 import com.capstone.storyforest.sentencegame.appropriateness.service.AppropriatenessService;
 import com.capstone.storyforest.sentencegame.creativity.service.CreativityService;
+import com.capstone.storyforest.sentencegame.dto.SentenceFeedbackResponseDTO;
 import com.capstone.storyforest.sentencegame.dto.SentenceScoreResponseDTO;
 import com.capstone.storyforest.sentencegame.dto.SentenceSubmitRequestDTO;
 import com.capstone.storyforest.sentencegame.filtering.service.ProfanityService;
@@ -82,23 +83,26 @@ public class SentenceService {
     }
 
 
-    // 문장 제출 -> 점수 계산 후 점수 누적하기
     @Transactional
-    public SentenceScoreResponseDTO submitSentence(SentenceSubmitRequestDTO sentenceSubmitRequestDTO, User user) throws JsonProcessingException {
+    public SentenceFeedbackResponseDTO submitSentence(
+            SentenceSubmitRequestDTO dto,
+            User user
+    ) throws JsonProcessingException {
 
+        String sentenceText = dto.getSentenceText();
 
         // 레벨 검증하기
-        if(sentenceSubmitRequestDTO.getLevel()<1||sentenceSubmitRequestDTO.getLevel()>3){
+        if(dto.getLevel()<1||dto.getLevel()>3){
             throw new SentenceHandler(ErrorStatus.INVALID_LEVEL_SENTENCE);
         }
 
         // 비속어 검사하기
-        if(profanityService.hasProfanity(sentenceSubmitRequestDTO.getSentenceText())){
+        if(profanityService.hasProfanity(dto.getSentenceText())){
             throw new SentenceHandler(ErrorStatus.PROFANITY_DETECTED);
         }
 
         /* 3. 단어 7개(문자열) 정규화 → DB 존재 여부 확인 */
-        List<String> lowerTerms = sentenceSubmitRequestDTO.getWords()                 // "Apple" → "apple"
+        List<String> lowerTerms = dto.getWords()                 // "Apple" → "apple"
                 .stream()
                 .map(String::toLowerCase)
                 .toList();
@@ -110,7 +114,7 @@ public class SentenceService {
 
 
         /* 1. 7개 단어가 모두 문장에 포함되어 있는지 검사하기 ─ 변경 ★ */
-        Set<String> stems = extractStems(sentenceSubmitRequestDTO.getSentenceText());  // 형태소 분석 → 어간 집합
+        Set<String> stems = extractStems(dto.getSentenceText());  // 형태소 분석 → 어간 집합
 
         boolean usedAll = true;          // 전부 포함 플래그
         for (Word word : words) {
@@ -125,34 +129,37 @@ public class SentenceService {
         System.out.println("===== DEBUG =====");
         System.out.println("stems : " + stems);          // 형태소 분석 결과
         for (Word w : words) {
-           boolean ok = containsDictWord(w.getTerm(), stems);
-           System.out.println(w.getTerm() + " -> " + ok);
+            boolean ok = containsDictWord(w.getTerm(), stems);
+            System.out.println(w.getTerm() + " -> " + ok);
         }
         System.out.println("=================");
 
+        // 피드백에 실제로 사용할 용어 리스트
+        List<String> terms = words.stream()
+                .map(Word::getTerm)
+                .toList();                                                               // ← 여기에 선언
 
-
-        // 3. 점수 계산하기
-        int score;
+        // 2) 피드백 생성
+        String feedback;
         if (!usedAll) {
-            score = 10;
-        } else {
-            List<String> terms = words.stream()
-                    .map(Word::getTerm)
+            // 누락된 단어만 뽑아서
+            List<String> missing = terms.stream()
+                    .filter(t -> !lowerTerms.contains(t.toLowerCase()))
                     .toList();
-            AppropriatenessResult result = appropriatenessService.evaluate(sentenceSubmitRequestDTO.getSentenceText(), terms);
-
+            feedback = "사용하지 않은 단어가 있어요!";
+        } else {
+            AppropriatenessResult result = appropriatenessService.evaluate(sentenceText, terms);
             if (Boolean.TRUE.equals(result.getIsAppropriate())) {
-                score = 15;
+                feedback = "잘 작성했어요! 문장이 자연스럽고 어투가 적절합니다.";
             } else {
-                boolean creative = creativityService.isCreative(sentenceSubmitRequestDTO.getSentenceText());
-                score = creative ? 20 : 10;
+                boolean creative = creativityService.isCreative(sentenceText);
+                feedback = creative
+                        ? "문장 구성은 좋지만, 좀 더 다듬으면 더욱 창의적인 표현이 될 거예요!"
+                        : "문장이 다소 어색해요. 간단히 다시 한 번 다듬어 보세요.";
             }
         }
 
-        user.setTotalScore(user.getTotalScore()+score);
-        userRepository.save(user);
-
-        return new SentenceScoreResponseDTO(user.getTotalScore());
+        return new SentenceFeedbackResponseDTO(feedback);
     }
+
 }

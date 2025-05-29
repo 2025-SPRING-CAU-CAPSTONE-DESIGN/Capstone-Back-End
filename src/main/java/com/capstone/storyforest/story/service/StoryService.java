@@ -1,9 +1,9 @@
 package com.capstone.storyforest.story.service;
 
 import com.capstone.storyforest.story.dto.StoryRequestDTO;
-import com.capstone.storyforest.story.dto.StoryResponseDTO;
 import com.capstone.storyforest.story.entity.Story;
 import com.capstone.storyforest.story.repository.StoryRepository;
+import com.capstone.storyforest.user.dto.StoryResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -1,10 +1,7 @@
 package com.capstone.storyforest.friend.controller;
 
 import com.capstone.storyforest.friend.domain.FriendRequest;
-import com.capstone.storyforest.friend.dto.FriendRequestDTO;
-import com.capstone.storyforest.friend.dto.FriendRequestResponseDTO;
-import com.capstone.storyforest.friend.dto.FriendRequestStatusDTO;
-import com.capstone.storyforest.friend.dto.FriendResponseDTO;
+import com.capstone.storyforest.friend.dto.*;
 import com.capstone.storyforest.friend.service.FriendService;
 import com.capstone.storyforest.friend.service.NotificationService;
 import com.capstone.storyforest.user.service.UserService;
@@ -12,7 +9,6 @@ import com.capstone.storyforest.user.entity.User;
 import com.capstone.storyforest.global.apiPaylod.ApiResponse;
 import com.capstone.storyforest.global.apiPaylod.code.status.SuccessStatus;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import jakarta.servlet.http.HttpServletRequest;
@@ -47,46 +43,35 @@ public class FriendController {
     }
 
     @PostMapping("/requests")
-    public ApiResponse<Void> sendFriendRequest(
+    public ApiResponse<FriendRequestNotificationDTO> sendFriendRequest(
             HttpServletRequest request,
             @RequestBody FriendRequestDTO dto
     ) {
         User user = getCurrentUser(request);
-        friendService.sendRequest(user, dto);
-        return ApiResponse.onSuccess(SuccessStatus._OK, null);
+        FriendRequestNotificationDTO responseDto = friendService.sendRequest(user, dto);
+        return ApiResponse.onSuccess(SuccessStatus._OK, responseDto);
     }
 
     @PatchMapping("/requests/{id}/accept")
-    public ResponseEntity<ApiResponse<FriendRequestStatusDTO>> acceptRequest(
+    public ApiResponse<FriendRequestStatusDTO> acceptRequest(
             HttpServletRequest request,
             @PathVariable Long id
     ) {
         User user = getCurrentUser(request);
         FriendRequest fr = friendService.acceptRequest(user, id);
-
-        // 컨트롤러에서 View Model(DTO) 변환
-        FriendRequestStatusDTO dto =
-                new FriendRequestStatusDTO(fr.getId(), fr.getStatus().name());
-
-        return ResponseEntity.ok(
-                ApiResponse.onSuccess(SuccessStatus._OK, dto)
-        );
+        FriendRequestStatusDTO dto = new FriendRequestStatusDTO(fr.getId(), fr.getStatus().name());
+        return ApiResponse.onSuccess(SuccessStatus._OK, dto);
     }
 
     @PatchMapping("/requests/{id}/reject")
-    public ResponseEntity<ApiResponse<FriendRequestStatusDTO>> rejectRequest(
+    public ApiResponse<FriendRequestStatusDTO> rejectRequest(
             HttpServletRequest request,
             @PathVariable Long id
     ) {
         User user = getCurrentUser(request);
         FriendRequest fr = friendService.rejectRequest(user, id);
-
-        FriendRequestStatusDTO dto =
-                new FriendRequestStatusDTO(fr.getId(), fr.getStatus().name());
-
-        return ResponseEntity.ok(
-                ApiResponse.onSuccess(SuccessStatus._OK, dto)
-        );
+        FriendRequestStatusDTO dto = new FriendRequestStatusDTO(fr.getId(), fr.getStatus().name());
+        return ApiResponse.onSuccess(SuccessStatus._OK, dto);
     }
 
     @GetMapping

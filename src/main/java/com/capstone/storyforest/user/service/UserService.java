@@ -4,6 +4,7 @@ package com.capstone.storyforest.user.service;
 import com.capstone.storyforest.global.apiPaylod.code.status.ErrorStatus;
 import com.capstone.storyforest.global.apiPaylod.exception.handler.UserHandler;
 import com.capstone.storyforest.global.jwt.JWTUtil;
+import com.capstone.storyforest.story.dto.StoryRequestDTO;
 import com.capstone.storyforest.story.entity.Story;
 import com.capstone.storyforest.story.repository.StoryRepository;
 import com.capstone.storyforest.user.dto.*;
@@ -30,6 +31,7 @@ public class UserService {
     private final UserStoryRepository userStoryRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JWTUtil jwtUtil;
+    private final StoryRepository storyRepository;
 
     public User joinProcess(JoinRequestDTO joinRequestDTO){
 
@@ -149,7 +151,35 @@ public class UserService {
     }
 
 
+    @Transactional
+    public StoryResponseDTO createUserStory(StoryRequestDTO request, String accessToken) {
+        // 1) 토큰으로 User 조회
+        User user = userRepository.findByaccessToken(accessToken)
+                .orElseThrow(() -> new IllegalArgumentException("로그인 정보가 유효하지 않습니다."));
 
+        // 2) Story 엔티티 저장
+        Story story = Story.builder()
+                .title(request.getTitle())
+                .content(request.getContent())
+                .score(0)
+                .build();
+        Story saved = storyRepository.save(story);
+
+        // 3) UserStory 연관관계 저장
+        UserStory us = UserStory.builder()
+                .user(user)
+                .story(saved)
+                .build();
+        userStoryRepository.save(us);
+
+        // 4) 응답용 DTO 변환
+        return new StoryResponseDTO(
+                saved.getId(),
+                saved.getTitle(),
+                saved.getContent(),
+                saved.getScore()
+        );
+    }
 
 
 }

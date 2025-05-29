@@ -3,6 +3,7 @@ package com.capstone.storyforest.sentencegame;
 import com.capstone.storyforest.global.apiPaylod.ApiResponse;
 import com.capstone.storyforest.global.apiPaylod.code.status.SuccessStatus;
 import com.capstone.storyforest.sentencegame.dto.RandomWordRequestDTO;
+import com.capstone.storyforest.sentencegame.dto.SentenceFeedbackResponseDTO;
 import com.capstone.storyforest.sentencegame.dto.SentenceScoreResponseDTO;
 import com.capstone.storyforest.sentencegame.dto.SentenceSubmitRequestDTO;
 import com.capstone.storyforest.sentencegame.service.SentenceService;
@@ -40,7 +41,7 @@ public class SentenceController {
 
     /* B. 문장 제출 */
     @PostMapping("/score")
-    public ResponseEntity<ApiResponse<SentenceScoreResponseDTO>> score(
+    public ResponseEntity<ApiResponse<SentenceFeedbackResponseDTO>> score(
             @RequestBody @Valid SentenceSubmitRequestDTO sentenceSubmitRequestDTO,
             User user) throws JsonProcessingException {
 

@@ -97,8 +97,10 @@ public class FriendController {
     }
 
     @GetMapping("/notifications/stream")
-    public SseEmitter subscribe(HttpServletRequest request) {
-        Long userId = getCurrentUser(request).getId();
-        return notificationService.subscribe(userId);
+    public SseEmitter subscribeWithToken(@RequestParam("token") String token) {
+        // 토큰으로 User 조회
+        User user = userService.getUserInfo(token);
+        // 해당 유저 ID로 SSE 구독
+        return notificationService.subscribe(user.getId());
     }
 }

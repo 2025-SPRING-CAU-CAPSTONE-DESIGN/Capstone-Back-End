@@ -77,6 +77,29 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.onSuccess(SuccessStatus._OK, getTierResponseDTO));
     }
 
+    @GetMapping("/users/{username}/tier")
+    public ResponseEntity<ApiResponse<?>> getFriendTierInfo(
+            @PathVariable("username") String username,
+            @RequestHeader("Authorization") String authorizationHeader) {
+
+        String accessToken = authorizationHeader.replace("Bearer ", "");
+        GetTierResponseDTO getTierResponseDTO = userService.getFriendTierInfo(username, accessToken);
+
+        return ResponseEntity.ok(ApiResponse.onSuccess(SuccessStatus._OK, getTierResponseDTO));
+    }
+
+
+    @GetMapping("/users/{username}/story/{storyId}")
+    public ResponseEntity<ApiResponse<?>> getFriendStory(
+            @PathVariable("username") String username,
+            @PathVariable("storyId") int storyId,
+            @RequestHeader("Authorization") String authorizationHeader) {
+
+        String accessToken = authorizationHeader.replace("Bearer ", "");
+        StoryResponseDTO storyResponseDTO = userService.getFriendStory(username, storyId, accessToken);
+
+        return ResponseEntity.ok(ApiResponse.onSuccess(SuccessStatus._OK, storyResponseDTO));
+    }
 
 
 

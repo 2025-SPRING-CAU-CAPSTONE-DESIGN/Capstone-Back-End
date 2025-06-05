@@ -103,7 +103,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests((auth) -> auth
                         // login root join 에 대해서는 모든 요청을 허용함.
-                        .requestMatchers("/login", "/", "/join", "/users/*/check").permitAll()
+                        .requestMatchers("/login", "/", "/join", "/users/*/check", "/api/friends/notifications/stream").permitAll()
                         // admin 경로는 ADMIN 만 접근할 수 있음
                         .requestMatchers("/admin").hasRole("ADMIN")
                         // 그 외 요청은 로그인한 사용자만 접근할 수 있도록 함.

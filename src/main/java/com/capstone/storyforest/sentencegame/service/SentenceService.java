@@ -150,12 +150,9 @@ public class SentenceService {
         } else {
             AppropriatenessResult result = appropriatenessService.evaluate(sentenceText, terms);
             if (Boolean.TRUE.equals(result.getIsAppropriate())) {
-                feedback = "잘 작성했어요! 문장이 자연스럽고 어투가 적절합니다.";
+                feedback = "좋아요! 글쓰기 능력이 점점 상승하고 있어요.";
             } else {
-                boolean creative = creativityService.isCreative(sentenceText);
-                feedback = creative
-                        ? "문장 구성은 좋지만, 좀 더 다듬으면 더욱 창의적인 표현이 될 거예요!"
-                        : "문장이 다소 어색해요. 간단히 다시 한 번 다듬어 보세요.";
+                feedback="최고예요! 다음엔 어떤 글이 나올지 궁금해요!";
             }
         }
 

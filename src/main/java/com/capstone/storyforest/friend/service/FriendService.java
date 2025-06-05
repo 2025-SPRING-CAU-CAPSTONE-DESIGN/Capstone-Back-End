@@ -94,30 +94,32 @@ public class FriendService {
                 .collect(Collectors.toList());
     }
 
+
     @Transactional
-    public User deleteFriend(User me, Long friendId) {
-        // 1) 내가 보낸 ACCEPTED 요청에 해당하는 경우
-        Optional<FriendRequest> sentOpt =
-                requestRepository.findAllBySenderAndStatus(me, FriendRequest.Status.ACCEPTED)
-                        .stream()
-                        .filter(fr -> fr.getReceiver().getId().equals(friendId))
-                        .findFirst();
+    public User deleteFriendByUsername(User me, String username) {
+        User target = userRepository.findByUsername(username)
+                .orElseThrow(() -> new FriendHandler(ErrorStatus.USER_NOT_FOUND));
+
+        // 내가 보낸 친구 요청 중 수락된 것 중 해당 유저가 있는 경우
+        Optional<FriendRequest> sentOpt = requestRepository.findAllBySenderAndStatus(me, FriendRequest.Status.ACCEPTED)
+                .stream()
+                .filter(fr -> fr.getReceiver().equals(target))
+                .findFirst();
+
         if (sentOpt.isPresent()) {
-            User deletedUser = sentOpt.get().getReceiver();
             requestRepository.delete(sentOpt.get());
-            return deletedUser;
+            return target;
         }
 
-        // 2) 내가 받은 ACCEPTED 요청에 해당하는 경우
-        Optional<FriendRequest> recvOpt =
-                requestRepository.findAllByReceiverAndStatus(me, FriendRequest.Status.ACCEPTED)
-                        .stream()
-                        .filter(fr -> fr.getSender().getId().equals(friendId))
-                        .findFirst();
+        // 내가 받은 친구 요청 중 수락된 것 중 해당 유저가 있는 경우
+        Optional<FriendRequest> recvOpt = requestRepository.findAllByReceiverAndStatus(me, FriendRequest.Status.ACCEPTED)
+                .stream()
+                .filter(fr -> fr.getSender().equals(target))
+                .findFirst();
+
         if (recvOpt.isPresent()) {
-            User deletedUser = recvOpt.get().getSender();
             requestRepository.delete(recvOpt.get());
-            return deletedUser;
+            return target;
         }
 
         throw new FriendHandler(ErrorStatus.FRIEND_NOT_FOUND);

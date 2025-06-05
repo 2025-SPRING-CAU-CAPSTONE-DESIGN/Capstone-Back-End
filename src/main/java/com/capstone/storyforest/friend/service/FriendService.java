@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -92,4 +93,34 @@ public class FriendService {
                 .map(u -> new FriendResponseDTO(u.getId(), u.getUsername()))
                 .collect(Collectors.toList());
     }
+
+    @Transactional
+    public User deleteFriend(User me, Long friendId) {
+        // 1) 내가 보낸 ACCEPTED 요청에 해당하는 경우
+        Optional<FriendRequest> sentOpt =
+                requestRepository.findAllBySenderAndStatus(me, FriendRequest.Status.ACCEPTED)
+                        .stream()
+                        .filter(fr -> fr.getReceiver().getId().equals(friendId))
+                        .findFirst();
+        if (sentOpt.isPresent()) {
+            User deletedUser = sentOpt.get().getReceiver();
+            requestRepository.delete(sentOpt.get());
+            return deletedUser;
+        }
+
+        // 2) 내가 받은 ACCEPTED 요청에 해당하는 경우
+        Optional<FriendRequest> recvOpt =
+                requestRepository.findAllByReceiverAndStatus(me, FriendRequest.Status.ACCEPTED)
+                        .stream()
+                        .filter(fr -> fr.getSender().getId().equals(friendId))
+                        .findFirst();
+        if (recvOpt.isPresent()) {
+            User deletedUser = recvOpt.get().getSender();
+            requestRepository.delete(recvOpt.get());
+            return deletedUser;
+        }
+
+        throw new FriendHandler(ErrorStatus.FRIEND_NOT_FOUND);
+    }
+
 }

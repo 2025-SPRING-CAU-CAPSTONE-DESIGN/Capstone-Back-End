@@ -120,6 +120,23 @@ public class UserService {
         return new GetTierResponseDTO(tier, progressPercent, storiesToNextTier, totalStory);
     }
 
+    public GetTierResponseDTO getFriendTierInfo(String username, String requesteToken){
+        User requester = userRepository.findByaccessToken(requesteToken)
+                .orElseThrow(() -> new RuntimeException("Requester not found"));
+        User friend = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Friend not found"));
+
+        int totalStories = userStoryRepository.countByUser(friend); // 친구가 만든 스토리 수
+        int tier = friend.getTier();
+        int lowerBound = (tier - 1) * 5;
+        int storiesInCurrentTier = totalStories - lowerBound;
+        int progressPercent = (int) ((storiesInCurrentTier / 5.0) * 100);
+        int storiesToNextTier = (tier < 10) ? (5 - storiesInCurrentTier) : 0;
+        int totalStory = totalStories;
+
+        return new GetTierResponseDTO(tier, progressPercent, storiesToNextTier, totalStory);
+    }
+
     public StoryResponseDTO getStory(int index, String accessToken) {
         if (index <= 0) {
             throw new IllegalArgumentException("Index must be 1 or greater");
@@ -130,6 +147,40 @@ public class UserService {
 
         Pageable page = PageRequest.of(index - 1, 1); // 0-based
         List<UserStory> userStories = userStoryRepository.findTopNByUser(user, page);
+
+        if (userStories.isEmpty()) {
+            throw new RuntimeException("No user story found at the given index");
+        }
+
+        UserStory userStory = userStories.get(0);
+
+        Story story = userStoryRepository.findStoryByUserStoryId(userStory.getId());
+        if (story == null) {
+            throw new RuntimeException("Story not found");
+        }
+
+        return new StoryResponseDTO(
+                story.getId(),
+                story.getTitle(),
+                story.getContent(),
+                story.getScore()
+        );
+    }
+
+    public StoryResponseDTO getFriendStory(String username, int index, String requesterToken){
+
+        if (index <= 0) {
+            throw new IllegalArgumentException("Index must be 1 or greater");
+        }
+
+        User user = userRepository.findByaccessToken(requesterToken)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        User friend = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Friend not found"));
+
+        Pageable page = PageRequest.of(index - 1, 1); // 0-based
+        List<UserStory> userStories = userStoryRepository.findTopNByUser(friend, page);
 
         if (userStories.isEmpty()) {
             throw new RuntimeException("No user story found at the given index");

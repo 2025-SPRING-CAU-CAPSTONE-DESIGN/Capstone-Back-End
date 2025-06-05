@@ -38,7 +38,7 @@ public enum ErrorStatus implements BaseErrorCode {
 
     /* ===== 친구 요청(duplicate) ===== */
     FRIEND_REQUEST_DUPLICATE("FRIEND4001", "이미 보낸 요청이 존재합니다."),
-
+    FRIEND_NOT_FOUND("FRIEND4002", "친구 관계를 찾을 수 없습니다."),
 
     /* ===== 대외(외부 API) ===== */
     OPENAI_CALL_FAILED ("OPENAI5001", "OpenAI Moderation API 호출에 실패했습니다."),

@@ -88,4 +88,17 @@ public class FriendController {
         // 해당 유저 ID로 SSE 구독
         return notificationService.subscribe(user.getId());
     }
+
+    @DeleteMapping("/{friendId}")
+    public ApiResponse<FriendResponseDTO> deleteFriend(
+            HttpServletRequest request,
+            @PathVariable Long friendId
+    ) {
+        User me = getCurrentUser(request);
+        // 삭제된 친구(User) 정보를 리턴받는다
+        User deletedUser = friendService.deleteFriend(me, friendId);
+        // FriendResponseDTO (id, username) 으로 변환
+        FriendResponseDTO dto = new FriendResponseDTO(deletedUser.getId(), deletedUser.getUsername());
+        return ApiResponse.onSuccess(SuccessStatus._OK, dto);
+    }
 }

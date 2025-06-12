@@ -110,12 +110,14 @@ public class UserService {
 
         int totalStories = userStoryRepository.countByUser(user); // 유저가 만든 스토리 수
 
-        int tier = user.getTier();
+        int tier = (totalStories>0) ? ((totalStories-1) / 5) + 1 : 1; // 스토리 수에 따라 티어 계산
         int lowerBound = (tier - 1) * 5;
         int storiesInCurrentTier = totalStories - lowerBound;
         int progressPercent = (int) ((storiesInCurrentTier / 5.0) * 100);
         int storiesToNextTier = (tier < 10) ? (5 - storiesInCurrentTier) : 0;
         int totalStory = totalStories;
+
+        user.setTier(tier); // 티어 업데이트
 
         return new GetTierResponseDTO(tier, progressPercent, storiesToNextTier, totalStory);
     }

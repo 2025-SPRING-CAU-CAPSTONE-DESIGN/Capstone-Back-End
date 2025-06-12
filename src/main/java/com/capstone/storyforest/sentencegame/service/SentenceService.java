@@ -31,16 +31,14 @@ import java.util.stream.Collectors;
 public class SentenceService {
 
     private final WordRepository wordRepository;
-    private final UserRepository userRepository;
     private final ProfanityService profanityService;
-    private final CreativityService creativityService;
     private final AppropriatenessService appropriatenessService;
 
     // ───────────────── OKT 형태소 분석: 문장의 어간 집합 추출
     private Set<String> extractStems(String sentence) {
         CharSequence norm = OpenKoreanTextProcessorJava.normalize(sentence);
         Seq<KoreanTokenizer.KoreanToken> tokens =
-                OpenKoreanTextProcessorJava.tokenize(norm);
+        OpenKoreanTextProcessorJava.tokenize(norm);
         List<KoreanTokenJava> javaTokens =
                 OpenKoreanTextProcessorJava.tokensToJavaKoreanTokenList(tokens);
 
@@ -51,6 +49,9 @@ public class SentenceService {
                 })
                 .collect(Collectors.toSet());
     }
+
+
+
 
     // ───────────────── 표제어(명사/동사) ↔ 어간 매칭
     private boolean containsDictWord(String dictTerm, Set<String> stems) {
@@ -150,9 +151,9 @@ public class SentenceService {
         } else {
             AppropriatenessResult result = appropriatenessService.evaluate(sentenceText, terms);
             if (Boolean.TRUE.equals(result.getIsAppropriate())) {
-                feedback = "좋아요! 글쓰기 능력이 점점 상승하고 있어요.";
+                feedback = "최고예요! 다음엔 어떤 글이 나올지 궁금해요!";
             } else {
-                feedback="최고예요! 다음엔 어떤 글이 나올지 궁금해요!";
+                feedback="좋아요! 글쓰기 능력이 점점 상승하고 있어요.";
             }
         }
 

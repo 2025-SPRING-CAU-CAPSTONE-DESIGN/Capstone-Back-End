@@ -2,14 +2,12 @@ version: 0.0
 os: linux
 
 files:
-  # CodeDeploy가 S3로부터 가져온 파일 중 destination으로 이동시킬 대상을 지정한다.
-  # / 이라고 지정하면 S3로부터 가져온 전체 파일을 뜻한다.
   - source: /
-    # CodeDeploy가 S3로부터 가져온 파일을 EC2의 어떤 경로에 저장할 지 지정한다.
     destination: /home/ubuntu/storyforest-server
 
 permissions:
-  - object: /
+  - object: scripts/start-server.sh
+    mode: 755
     owner: ubuntu
     group: ubuntu
 

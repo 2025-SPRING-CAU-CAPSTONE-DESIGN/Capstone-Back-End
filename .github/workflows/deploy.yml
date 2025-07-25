@@ -8,53 +8,50 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
+      - name: Github Repository 파일 불러오기
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+      - name: JDK 17버전 설치
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
 
-      - name: Create application.yml from secret
+      - name: application.yml 파일 만들기
         run: echo "${{ secrets.APPLICATION_PROPERTIES }}" > ./src/main/resources/application.yml
 
-      - name: Build project
+      - name: 테스트 및 빌드하기
         run: ./gradlew clean build
 
-      - name: Configure AWS credentials
+      - name: AWS Resource에 접근할 수 있게 AWS credentials 설정
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: ap-northeast-2
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-      - name: Login to ECR
+      - name: ECR에 로그인하기
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
-
-      - name: Build Docker image
+      - name: Docker 이미지 생성
         run: docker build -t storyforest-server .
 
-      - name: Tag and push to ECR
-        run: |
-          docker tag storyforest-server ${{ steps.login-ecr.outputs.registry }}/storyforest-server:latest
-          docker push ${{ steps.login-ecr.outputs.registry }}/storyforest-server:latest
+      - name: Docker 이미지에 Tag 붙이기
+        run: docker tag storyforest-server ${{ steps.login-ecr.outputs.registry }}/storyforest-server:latest
 
-      - name: Package appspec and scripts
+      - name: ECR에 Docker 이미지 Push하기
+        run: docker push ${{ steps.login-ecr.outputs.registry }}/storyforest-server:latest
+
+      - name: 압축하기
         run: tar -czvf $GITHUB_SHA.tar.gz appspec.yml scripts
 
-      - name: Upload bundle to S3
+      - name: S3에 프로젝트 폴더 업로드하기
         run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.tar.gz s3://storyforest-server/$GITHUB_SHA.tar.gz
 
-      - name: Trigger CodeDeploy
-        run: |
-          aws deploy create-deployment \
-            --application-name storyforest-server \
-            --deployment-config-name CodeDeployDefault.AllAtOnce \
-            --deployment-group-name Production \
-            --region ap-northeast-2 \
-            --s3-location bucket=storyforest-server,bundleType=tgz,key=$GITHUB_SHA.tar.gz
+      - name: Code Deploy를 활용해 EC2에 프로젝트 코드 배포
+        run: aws deploy create-deployment
+          --application-name storyforest-server
+          --deployment-config-name CodeDeployDefault.AllAtOnce
+          --deployment-group-name Production
+          --s3-location bucket=storyforest-server,bundleType=tgz,key=$GITHUB_SHA.tar.gz

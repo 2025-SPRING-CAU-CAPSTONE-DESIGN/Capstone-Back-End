@@ -9,10 +9,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.RequestEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -72,6 +74,15 @@ public class OpenAiAppropriatenessService implements AppropriatenessService{
             // 실패 시 ‘부적절’로 간주
             return new AppropriatenessResult(false, List.of());
         }
+    }
+
+    @Async("taskExecutor")
+    @Override
+    public CompletableFuture<AppropriatenessResult> evaluateAsync(
+            String sentence, List<String> requiredWords) {
+        return CompletableFuture.completedFuture(
+                evaluate(sentence, requiredWords)
+        );
     }
 
 }

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping("/api/sentence")
@@ -39,7 +40,8 @@ public class SentenceController {
     }
 
 
-    /* B. 문장 제출 */
+
+
     @PostMapping("/score")
     public ResponseEntity<ApiResponse<SentenceFeedbackResponseDTO>> score(
             @RequestBody @Valid SentenceSubmitRequestDTO sentenceSubmitRequestDTO,
@@ -51,4 +53,16 @@ public class SentenceController {
                         sentenceService.submitSentence(sentenceSubmitRequestDTO, user)));
     }
 
+
+    /*@PostMapping("/score")
+    public CompletableFuture<ResponseEntity<ApiResponse<SentenceFeedbackResponseDTO>>> score(
+            @RequestBody @Valid SentenceSubmitRequestDTO dto,
+            User user
+    ) {
+        return sentenceService.submitSentenceAsync(dto, user)
+                .thenApply(feedback ->
+                        ResponseEntity.ok(ApiResponse.onSuccess(SuccessStatus._OK, feedback))
+                );
+    }
+*/
 }

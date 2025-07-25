@@ -18,12 +18,14 @@ import lombok.RequiredArgsConstructor;
 import org.openkoreantext.processor.KoreanTokenJava;
 import org.openkoreantext.processor.OpenKoreanTextProcessorJava;
 import org.openkoreantext.processor.tokenizer.KoreanTokenizer;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import scala.collection.Seq;
 
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Service
@@ -158,6 +160,22 @@ public class SentenceService {
         }
 
         return new SentenceFeedbackResponseDTO(feedback);
+    }
+
+    // 비동기 래퍼
+    @Async("taskExecutor")
+    @Transactional
+    public CompletableFuture<SentenceFeedbackResponseDTO> submitSentenceAsync(
+            SentenceSubmitRequestDTO dto, User user) {
+        try {
+            // 동기 메서드 재사용
+            SentenceFeedbackResponseDTO fb = submitSentence(dto, user);
+            return CompletableFuture.completedFuture(fb);
+        } catch (Exception e) {
+            CompletableFuture<SentenceFeedbackResponseDTO> cf = new CompletableFuture<>();
+            cf.completeExceptionally(e);
+            return cf;
+        }
     }
 
 }
